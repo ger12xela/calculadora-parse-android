@@ -1,0 +1,33 @@
+package com.example.prueba.parser;
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import java.util.List;
+
+class SimpleParser;
+
+parser code {:
+
+    public SimpleParser(SimpleLexer lexer){
+        super (lexer);
+    }
+
+:}
+
+terminal Token NUMBER, DECIMAL, LPAREN, RPAREN, MINUS, PLUS, TIMES, DIV;
+non terminal Double expr;
+non terminal ini;
+
+precedence left PLUS;
+precedence left MINUS;
+precedence left TIMES;
+precedence left DIV;
+
+start with expr;
+
+expr ::= expr:e1 PLUS expr:e2		{:RESULT  = e1+e2; :}
+		|expr:e1 MINUS expr:e2		{:RESULT  = e1-e2; :}
+		|expr:e1 TIMES expr:e2		{:RESULT  = e1*e2; :}
+		|expr:e1 DIV expr:e2		{:RESULT  = e1/e2; :}
+		|LPAREN expr:e RPAREN		{:RESULT  =  e; :}
+		|DECIMAL:n                  {:RESULT = Double.valueOf(n.getValue());:}
+		|NUMBER:n  					{:RESULT = Double.valueOf(n.getValue());:};

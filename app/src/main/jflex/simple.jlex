@@ -1,0 +1,54 @@
+package com.example.prueba.parser;
+
+import java_cup.runtime.Symbol;
+import static com.example.prueba.parser.SimpleParserSym.*;
+
+
+%%
+%public
+%class SimpleLexer
+%line
+%column
+%cup
+%ignorecase
+%type java_cup.runtime.Symbol
+
+digit = [0-9]
+decima = [0-9]+("."[  |0-9]+)?
+letter = [a-zA-Z]
+whitspace = [ \t\r\n]+
+idnombre = {letter}+[-*_*{digit}*{letter}*]*
+
+%{
+    private Symbol symbol (int type, Object value){
+        return new Symbol(type, new Token (value.toString(), type, yyline+1, yycolumn+1));
+    }
+
+    private Symbol symbol (int type){
+        return new Symbol (type, new Token (null, type, yyline+1, yycolumn+1));
+    }
+
+%}
+
+%eofval{
+	return symbol(SimpleParserSym.EOF);
+	/*hacer algo al final del archivo*/
+%eofval}
+
+
+
+%%
+	{digit}+				    {return symbol(NUMBER,yytext());}
+
+	{decima}		        {
+	                            System.out.print(yytext());
+	                        return symbol(DECIMAL,yytext());}
+	"("						{return symbol(LPAREN);}
+	")"						{return symbol(RPAREN);}
+	"-"						{return symbol(MINUS);}
+	"+"						{return symbol(PLUS);}
+	"*"						{return symbol(TIMES);}
+	"/"						{return symbol(DIV);}
+	{whitspace}+			{}
+	[^]						{}
+
